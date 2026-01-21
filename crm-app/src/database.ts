@@ -80,14 +80,22 @@ export async function createContact(contact: Contact) {
   const result = await db.execute(
     `INSERT INTO contacts (first_name, last_name, email, phone, company_id)
      VALUES ($1, $2, $3, $4, $5)`,
-    [contact.first_name, contact.last_name, contact.email || null, contact.phone || null, contact.company_id || null]
+    [
+      contact.first_name,
+      contact.last_name,
+      contact.email || null,
+      contact.phone || null,
+      contact.company_id || null,
+    ],
   );
   return result;
 }
 
 export async function getContacts(): Promise<Contact[]> {
   const db = getDatabase();
-  const result = await db.select<Contact[]>(`SELECT * FROM contacts ORDER BY created_at DESC`);
+  const result = await db.select<Contact[]>(
+    `SELECT * FROM contacts ORDER BY created_at DESC`,
+  );
   return result;
 }
 
@@ -122,7 +130,7 @@ export async function updateContact(id: number, contact: Partial<Contact>) {
 
   await db.execute(
     `UPDATE contacts SET ${fields.join(", ")} WHERE id = ?`,
-    values
+    values,
   );
 }
 
@@ -147,14 +155,21 @@ export async function createCompany(company: Company) {
   const db = getDatabase();
   const result = await db.execute(
     `INSERT INTO companies (name, industry, website, phone) VALUES ($1, $2, $3, $4)`,
-    [company.name, company.industry || null, company.website || null, company.phone || null]
+    [
+      company.name,
+      company.industry || null,
+      company.website || null,
+      company.phone || null,
+    ],
   );
   return result;
 }
 
 export async function getCompanies(): Promise<Company[]> {
   const db = getDatabase();
-  const result = await db.select<Company[]>(`SELECT * FROM companies ORDER BY created_at DESC`);
+  const result = await db.select<Company[]>(
+    `SELECT * FROM companies ORDER BY created_at DESC`,
+  );
   return result;
 }
 
@@ -185,7 +200,7 @@ export async function updateCompany(id: number, company: Partial<Company>) {
 
   await db.execute(
     `UPDATE companies SET ${fields.join(", ")} WHERE id = ?`,
-    values
+    values,
   );
 }
 
@@ -193,7 +208,10 @@ export async function deleteCompany(id: number) {
   const db = getDatabase();
   await db.execute(`DELETE FROM companies WHERE id = ?`, [id]);
   await db.execute(`DELETE FROM notes WHERE company_id = ?`, [id]);
-  await db.execute(`UPDATE contacts SET company_id = NULL WHERE company_id = ?`, [id]);
+  await db.execute(
+    `UPDATE contacts SET company_id = NULL WHERE company_id = ?`,
+    [id],
+  );
 }
 
 // Note operations
@@ -209,7 +227,7 @@ export async function createNote(note: Note) {
   const db = getDatabase();
   const result = await db.execute(
     `INSERT INTO notes (contact_id, company_id, content) VALUES ($1, $2, $3)`,
-    [note.contact_id || null, note.company_id || null, note.content]
+    [note.contact_id || null, note.company_id || null, note.content],
   );
   return result;
 }
@@ -218,7 +236,7 @@ export async function getNotesByContact(contactId: number): Promise<Note[]> {
   const db = getDatabase();
   const result = await db.select<Note[]>(
     `SELECT * FROM notes WHERE contact_id = ? ORDER BY created_at DESC`,
-    [contactId]
+    [contactId],
   );
   return result;
 }
@@ -227,7 +245,7 @@ export async function getNotesByCompany(companyId: number): Promise<Note[]> {
   const db = getDatabase();
   const result = await db.select<Note[]>(
     `SELECT * FROM notes WHERE company_id = ? ORDER BY created_at DESC`,
-    [companyId]
+    [companyId],
   );
   return result;
 }
