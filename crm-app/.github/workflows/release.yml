@@ -1,4 +1,4 @@
-name: Release
+name: 'publish'
 
 on:
   workflow_dispatch:
@@ -10,8 +10,11 @@ permissions:
   contents: write
 
 jobs:
-  build-macos:
+  macos:
+    permissions:
+      contents: write
     runs-on: macos-latest
+
     steps:
       - uses: actions/checkout@v4
 
@@ -38,32 +41,35 @@ jobs:
       - name: Install frontend dependencies
         run: pnpm install
 
-      - name: Build Tauri app (ARM)
+      - name: Build for Apple Silicon
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: ${{ github.ref_name }}
-          releaseName: 'CRM App ${{ github.ref_name }}'
-          releaseBody: 'Download the installer for your platform below.'
+          tagName: v__VERSION__
+          releaseName: 'v__VERSION__'
+          releaseBody: 'See the assets to download this version and install.'
           releaseDraft: true
           prerelease: false
-          args: --target aarch64-apple-darwin
+          args: '--target aarch64-apple-darwin'
 
-      - name: Build Tauri app (Intel)
+      - name: Build for Intel Mac
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: ${{ github.ref_name }}
-          releaseName: 'CRM App ${{ github.ref_name }}'
-          releaseBody: 'Download the installer for your platform below.'
+          tagName: v__VERSION__
+          releaseName: 'v__VERSION__'
+          releaseBody: 'See the assets to download this version and install.'
           releaseDraft: true
           prerelease: false
-          args: --target x86_64-apple-darwin
+          args: '--target x86_64-apple-darwin'
 
-  build-windows:
+  windows:
+    permissions:
+      contents: write
     runs-on: windows-latest
+
     steps:
       - uses: actions/checkout@v4
 
@@ -88,19 +94,21 @@ jobs:
       - name: Install frontend dependencies
         run: pnpm install
 
-      - name: Build Tauri app
-        uses: tauri-apps/tauri-action@v0
+      - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: ${{ github.ref_name }}
-          releaseName: 'CRM App ${{ github.ref_name }}'
-          releaseBody: 'Download the installer for your platform below.'
+          tagName: v__VERSION__
+          releaseName: 'v__VERSION__'
+          releaseBody: 'See the assets to download this version and install.'
           releaseDraft: true
           prerelease: false
 
-  build-linux:
+  linux:
+    permissions:
+      contents: write
     runs-on: ubuntu-22.04
+
     steps:
       - uses: actions/checkout@v4
 
@@ -130,13 +138,12 @@ jobs:
       - name: Install frontend dependencies
         run: pnpm install
 
-      - name: Build Tauri app
-        uses: tauri-apps/tauri-action@v0
+      - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: ${{ github.ref_name }}
-          releaseName: 'CRM App ${{ github.ref_name }}'
-          releaseBody: 'Download the installer for your platform below.'
+          tagName: v__VERSION__
+          releaseName: 'v__VERSION__'
+          releaseBody: 'See the assets to download this version and install.'
           releaseDraft: true
           prerelease: false
